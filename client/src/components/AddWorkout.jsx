@@ -26,6 +26,10 @@ const Title = styled.div`
 `;
 
 const AddWorkout = ({ workout, setWorkout, addNewWorkout, buttonLoading }) => {
+  const handleChange = (e) => {
+    setWorkout(e.target.value);
+  };
+
   return (
     <Card>
       <Title>Add New Workout</Title>
@@ -42,12 +46,12 @@ const AddWorkout = ({ workout, setWorkout, addNewWorkout, buttonLoading }) => {
 -Weight
 -Duration`}
         value={workout}
-        handelChange={(e) => setWorkout(e.target.value)}
+        handelChange={handleChange}
       />
       <Button
         text="Add Workout"
         small
-        onClick={() => addNewWorkout()}
+        onClick={addNewWorkout}
         isLoading={buttonLoading}
         isDisabled={buttonLoading}
       />
