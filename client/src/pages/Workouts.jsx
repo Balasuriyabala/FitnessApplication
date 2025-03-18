@@ -6,7 +6,6 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DateCalendar } from "@mui/x-date-pickers";
 import { getWorkouts } from "../api";
 import { CircularProgress } from "@mui/material";
-import { useDispatch } from "react-redux";
 
 const Container = styled.div`
   flex: 1;
@@ -61,7 +60,6 @@ const Section = styled.div`
   flex-direction: column;
   padding: 0px 16px;
   gap: 22px;
-  padding: 0px 16px;
   @media (max-width: 600px) {
     gap: 12px;
   }
@@ -73,7 +71,6 @@ const SecTitle = styled.div`
 `;
 
 const Workouts = () => {
-  const dispatch = useDispatch();
   const [todaysWorkouts, setTodaysWorkouts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [date, setDate] = useState("");
@@ -81,16 +78,20 @@ const Workouts = () => {
   const getTodaysWorkout = async () => {
     setLoading(true);
     const token = localStorage.getItem("fittrack-app-token");
-    await getWorkouts(token, date ? `?date=${date}` : "").then((res) => {
-      setTodaysWorkouts(res?.data?.todaysWorkouts);
-      console.log(res.data);
+    try {
+      const res = await getWorkouts(token, date ? `?date=${date}` : "");
+      setTodaysWorkouts(res?.data?.todaysWorkouts || []);
+    } catch (error) {
+      console.error("Error fetching workouts:", error);
+    } finally {
       setLoading(false);
-    });
+    }
   };
 
   useEffect(() => {
     getTodaysWorkout();
   }, [date]);
+
   return (
     <Container>
       <Wrapper>
@@ -109,9 +110,13 @@ const Workouts = () => {
               <CircularProgress />
             ) : (
               <CardWrapper>
-                {todaysWorkouts.map((workout) => (
-                  <WorkoutCard workout={workout} />
-                ))}
+                {todaysWorkouts.length > 0 ? (
+                  todaysWorkouts.map((workout, index) => (
+                    <WorkoutCard key={index} workout={workout} />
+                  ))
+                ) : (
+                  <div>No workouts available for this date.</div>
+                )}
               </CardWrapper>
             )}
           </Section>
