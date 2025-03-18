@@ -47,7 +47,6 @@ const Section = styled.div`
   flex-direction: column;
   padding: 0px 16px;
   gap: 22px;
-  padding: 0px 16px;
   @media (max-width: 600px) {
     gap: 12px;
   }
@@ -68,11 +67,7 @@ const Dashboard = () => {
   const [data, setData] = useState();
   const [buttonLoading, setButtonLoading] = useState(false);
   const [todaysWorkouts, setTodaysWorkouts] = useState([]);
-  const [workout, setWorkout] = useState(`#Legs
--Back Squat
--5 setsX15 reps
--30 kg
--10 min`);
+  const [workout, setWorkout] = useState(`#Legs\n-Back Squat\n-5 setsX15 reps\n-30 kg\n-10 min`);
 
   const dashboardData = async () => {
     setLoading(true);
@@ -83,6 +78,7 @@ const Dashboard = () => {
       setLoading(false);
     });
   };
+
   const getTodaysWorkout = async () => {
     setLoading(true);
     const token = localStorage.getItem("fittrack-app-token");
@@ -111,13 +107,16 @@ const Dashboard = () => {
     dashboardData();
     getTodaysWorkout();
   }, []);
-  return (
+
+  return loading ? (
+    <p>Loading...</p>
+  ) : (
     <Container>
       <Wrapper>
         <Title>Dashboard</Title>
         <FlexWrap>
-          {counts.map((item) => (
-            <CountsCard item={item} data={data} />
+          {counts.map((item, index) => (
+            <CountsCard key={index} item={item} data={data} />
           ))}
         </FlexWrap>
 
@@ -135,8 +134,8 @@ const Dashboard = () => {
         <Section>
           <Title>Todays Workouts</Title>
           <CardWrapper>
-            {todaysWorkouts.map((workout) => (
-              <WorkoutCard workout={workout} />
+            {todaysWorkouts.map((workout, index) => (
+              <WorkoutCard key={index} workout={workout} />
             ))}
           </CardWrapper>
         </Section>
