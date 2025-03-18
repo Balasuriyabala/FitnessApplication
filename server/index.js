@@ -4,7 +4,10 @@ import cors from "cors";
 import mongoose from "mongoose";
 import UserRoutes from "./routes/User.js";
 
-dotenv.config();
+dotenv.config(); // Load environment variables
+
+// Debugging: Check if .env file is loaded
+console.log("MONGODB_URL from .env:", process.env.MONGODB_URL);
 
 const app = express();
 app.use(cors());
@@ -12,7 +15,8 @@ app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true })); // for form data
 
 app.use("/api/user/", UserRoutes);
-// error handler
+
+// Error handler
 app.use((err, req, res, next) => {
   const status = err.status || 500;
   const message = err.message || "Something went wrong";
@@ -29,23 +33,36 @@ app.get("/", async (req, res) => {
   });
 });
 
-const connectDB = () => {
-  mongoose.set("strictQuery", true);
-  mongoose
-    .connect(process.env.MONGODB_URL)
-    .then(() => console.log("Connected to Mongo DB"))
-    .catch((err) => {
-      console.error("failed to connect with mongo");
-      console.error(err);
+// Database connection function
+const connectDB = async () => {
+  try {
+    if (!process.env.MONGODB_URL) {
+      throw new Error("MONGODB_URL is not defined in .env file");
+    }
+
+    mongoose.set("strictQuery", true);
+    await mongoose.connect(process.env.MONGODB_URL, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
     });
+
+    console.log("✅ Connected to MongoDB");
+  } catch (error) {
+    console.error("❌ Failed to connect to MongoDB");
+    console.error(error.message);
+    process.exit(1); // Exit the process if DB connection fails
+  }
 };
 
+// Start server function
 const startServer = async () => {
   try {
-    connectDB();
-    app.listen(8080, () => console.log("Server started on port 8080"));
+    await connectDB();
+    const PORT = process.env.PORT || 7000;
+    app.listen(PORT, () => console.log(`🚀 Server started on port ${PORT}`));
   } catch (error) {
-    console.log(error);
+    console.error("❌ Server failed to start");
+    console.error(error);
   }
 };
 
