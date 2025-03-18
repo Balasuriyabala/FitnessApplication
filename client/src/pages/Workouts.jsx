@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import styled from "styled-components";
 import WorkoutCard from "../components/cards/WorkoutCard";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -75,7 +75,7 @@ const Workouts = () => {
   const [loading, setLoading] = useState(false);
   const [date, setDate] = useState("");
 
-  const getTodaysWorkout = async () => {
+  const getTodaysWorkout = useCallback(async () => {
     setLoading(true);
     const token = localStorage.getItem("fittrack-app-token");
     try {
@@ -86,11 +86,11 @@ const Workouts = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [date]);
 
   useEffect(() => {
     getTodaysWorkout();
-  }, [date]);
+  }, [getTodaysWorkout]);
 
   return (
     <Container>
