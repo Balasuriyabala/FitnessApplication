@@ -1,0 +1,28 @@
+pipeline {
+    agent any
+    
+    stages {
+        stage('Git Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/Balasuriyabala/FitnessApplication.git'
+            }
+        }
+        
+        stage("Backend") {
+            steps {
+                dir('server') {  
+                    sh "chmod 777 .env"
+                }
+            }
+        } 
+
+        stage("Start Application") {
+            steps {
+                dir('server') {
+                    sh "nohup node index.js > app.log 2>&1 &"
+                    echo "Application started in the background."
+                }
+            }
+        }
+    }
+}
