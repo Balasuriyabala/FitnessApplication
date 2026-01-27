@@ -1,0 +1,70 @@
+Host Application Deployment:
+
+1. Clone the Code from GITHUB
+2. Install web server nginx
+3. Install pm2 to run application in background
+
+AIM: EXPOSE THE APPLICATION THROUGH WEB SERVES:
+
+nginx.conf file:
+
+root@bala-VirtualBox:/etc/nginx/sites-available# cat fitnessapp
+server {
+    listen 80;
+    server_name <ip>;
+
+    access_log /var/log/nginx/myapp_access.log;
+    error_log  /var/log/nginx/myapp_error.log;
+
+    location / {
+        proxy_pass http://127.0.0.1:30001/;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
+
+Step:1 Try to run application without webserver
+Step:2 And then start application using a pm2 for that run following command
+        F.E: npm run build
+        npm install -g serve
+        pm2 start "serve -s build -l 30001" --name fitness-fe
+
+       B.E: npm run build
+            pm2 start index.js --name fitness-bck
+Step:3 1.Afterthat you will be able run the application using pm2, now via nginx for that copy the above nginx config file as we know application already running in the portno: 3000, 
+2.After nginx config file updated the application run in both 80 and 3000,we need to cut off port 3000 so run these command pm2 start "npx serve -s /home/bala/fitness/client/build -l 127.0.0.1:30001" --name <> 
+3. it is the methos of binding app locally.
+
+ngnixfile:
+server {
+    listen 80;
+    server_name 192.168.29.92;
+
+    access_log /var/log/nginx/myapp_access.log;
+    error_log  /var/log/nginx/myapp_error.log;
+
+    # FRONTEND STATIC FILES
+    root /home/bala/FitnessApplication/client/build;
+    index index.html;
+
+    location / {
+        try_files $uri /index.html;
+    }
+
+    # BACKEND API
+    location /api/ {
+        proxy_pass http://127.0.0.1:7000/;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+}
+
+
+
+
+
+
+
