@@ -1,0 +1,12 @@
+name:  On-push
+on: push
+jobs:
+  mybuild:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Show what triggered this run: 
+        run: |
+           echo "Event name : $GITHUB_EVENT_NAME"
+           echo "BRANCH ref: $GITHUB_REF"
+           echo "Commit SHA : $ GITHUB_SHA"
+           echo "Pushed by : $GITHUB_ACTOR"
