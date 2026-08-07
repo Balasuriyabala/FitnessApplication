@@ -4,7 +4,7 @@ jobs:
   mybuild:
     runs-on: ubuntu-latest
     steps:
-      - name: Show what triggered this run: 
+      - name: Show what triggered this run
         run: |
            echo "Event name : $GITHUB_EVENT_NAME"
            echo "BRANCH ref: $GITHUB_REF"
